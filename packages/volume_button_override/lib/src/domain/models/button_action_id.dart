@@ -1,0 +1,1 @@
+enum ButtonActionId { volumeUp, volumeDown }

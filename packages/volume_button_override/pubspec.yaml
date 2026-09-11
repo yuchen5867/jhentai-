@@ -1,0 +1,27 @@
+name: volume_button_override
+description: "Android and iOS volume button override plugin."
+version: 0.0.1
+homepage: https://github.com/yigithanyaramis/volume_button_override
+
+environment:
+  sdk: ">=3.5.0 <4.0.0"
+  flutter: ">=3.3.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  plugin_platform_interface: ^2.0.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  plugin:
+    platforms:
+      android:
+        package: com.volume_button_override
+        pluginClass: VolumeButtonOverridePlugin
+      ios:
+        pluginClass: VolumeButtonOverridePlugin
