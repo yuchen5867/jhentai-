@@ -90,7 +90,8 @@ dependencies:
   loading_animation_widget: 1.2.0+4
   simple_animations: 5.0.2
   animated_flip_counter: 0.2.6
-  saver_gallery: 5.1.0
+  saver_gallery:
+    path: packages/saver_gallery
   system_network_proxy: 
     git: 
       url: https://github.com/jiangtian616/system_network_proxy
