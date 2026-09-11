@@ -21,6 +21,7 @@ enum ConfigEnum {
   siteSetting('siteSetting'),
   styleSetting('styleSetting'),
   superResolutionSetting('SuperResolutionSetting'),
+  mangaTranslationSetting('mangaTranslationSetting'),
   userSetting('userSetting'),
   archiveBotSetting('archiveBotSetting'),
   keyboardShortcutSetting('keyboardShortcutSetting'),

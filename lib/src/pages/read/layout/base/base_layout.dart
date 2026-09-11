@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:math';
 
 import 'package:extended_image/extended_image.dart';
@@ -12,6 +13,7 @@ import '../../../../config/ui_config.dart';
 import '../../../../service/gallery_download/gallery_download_service.dart';
 import '../../../../service/super_resolution_service.dart';
 import '../../../../service/log.dart';
+import '../../widget/manga_translation_overlay.dart';
 import '../../../../widget/eh_image.dart';
 import '../../../../widget/icon_text_button.dart';
 import '../../../../widget/loading_state_indicator.dart';
@@ -155,20 +157,36 @@ abstract class BaseLayout extends StatelessWidget {
   }
 
   Widget _buildOnlineImage(BuildContext context, int index) {
-    return GestureDetector(
-      onLongPressStart: (details) => logic.showOnlineImageContextMenu(index, context, position: details.globalPosition),
-      onSecondaryTapDown: (details) => logic.showOnlineImageContextMenu(index, context, position: details.globalPosition),
-      child: EHImage(
-        galleryImage: readPageState.images[index]!,
-        containerWidth: logic.readPageState.imageContainerSizes[index]?.width ?? logic.getPlaceHolderSize(index).width,
-        containerHeight: logic.readPageState.imageContainerSizes[index]?.height ?? logic.getPlaceHolderSize(index).height,
-        clearMemoryCacheWhenDispose: true,
-        loadingProgressWidgetBuilder: (double progress) => _loadingProgressWidgetBuilder(index, progress),
-        failedWidgetBuilder: (ExtendedImageState state) => _failedWidgetBuilder(index, state),
-        completedWidgetBuilder: (state) => completedWidgetBuilderCallBack(index, state),
-        animateOnlyWhenVisible: true,
-        maxBytes: readSetting.enableMaxImageKilobyte.isTrue ? readSetting.maxImageKilobyte.toInt() * 1024 : null,
-      ),
+    double width = logic.readPageState.imageContainerSizes[index]?.width ?? logic.getPlaceHolderSize(index).width;
+    double height = logic.readPageState.imageContainerSizes[index]?.height ?? logic.getPlaceHolderSize(index).height;
+
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        GestureDetector(
+          onLongPressStart: (details) => logic.showOnlineImageContextMenu(index, context, position: details.globalPosition),
+          onSecondaryTapDown: (details) => logic.showOnlineImageContextMenu(index, context, position: details.globalPosition),
+          child: EHImage(
+            galleryImage: readPageState.images[index]!,
+            containerWidth: width,
+            containerHeight: height,
+            clearMemoryCacheWhenDispose: true,
+            loadingProgressWidgetBuilder: (double progress) => _loadingProgressWidgetBuilder(index, progress),
+            failedWidgetBuilder: (ExtendedImageState state) => _failedWidgetBuilder(index, state),
+            completedWidgetBuilder: (state) => completedWidgetBuilderCallBack(index, state),
+            animateOnlyWhenVisible: true,
+            maxBytes: readSetting.enableMaxImageKilobyte.isTrue ? readSetting.maxImageKilobyte.toInt() * 1024 : null,
+          ),
+        ),
+        if (readPageState.readPageInfo.gid != null)
+          MangaTranslationOverlay(
+            gid: readPageState.readPageInfo.gid!,
+            pageIndex: index,
+            containerWidth: width,
+            containerHeight: height,
+            imageFile: readPageState.images[index]?.path != null ? File(readPageState.images[index]!.path!) : null,
+          ),
+      ],
     );
   }
 
@@ -258,22 +276,37 @@ abstract class BaseLayout extends StatelessWidget {
           return _buildLocalImage(context, index);
         }
 
-        return GestureDetector(
-          onLongPressStart: (details) => logic.showLocalImageContextMenu(index, context, position: details.globalPosition),
-          onSecondaryTapDown: (details) => logic.showLocalImageContextMenu(index, context, position: details.globalPosition),
-          child: EHImage(
-            galleryImage: readPageState.images[index]!.copyWith(
-              path: superResolutionService.computeImageOutputRelativePath(readPageState.images[index]!.path!),
+        double width = logic.readPageState.imageContainerSizes[index]?.width ?? logic.getPlaceHolderSize(index).width;
+        double height = logic.readPageState.imageContainerSizes[index]?.height ?? logic.getPlaceHolderSize(index).height;
+
+        return Stack(
+          alignment: Alignment.center,
+          children: [
+            GestureDetector(
+              onLongPressStart: (details) => logic.showLocalImageContextMenu(index, context, position: details.globalPosition),
+              onSecondaryTapDown: (details) => logic.showLocalImageContextMenu(index, context, position: details.globalPosition),
+              child: EHImage(
+                galleryImage: readPageState.images[index]!.copyWith(
+                  path: superResolutionService.computeImageOutputRelativePath(readPageState.images[index]!.path!),
+                ),
+                containerWidth: width,
+                containerHeight: height,
+                clearMemoryCacheWhenDispose: true,
+                loadingWidgetBuilder: () => _loadingWidgetBuilder(context, index),
+                failedWidgetBuilder: (state) => _failedWidgetBuilderForLocalMode(index, state),
+                completedWidgetBuilder: (state) => completedWidgetBuilderForLocalModeCallBack(index, state),
+                animateOnlyWhenVisible: true,
+                maxBytes: readSetting.enableMaxImageKilobyte.isTrue ? readSetting.maxImageKilobyte.toInt() * 1024 : null,
+              ),
             ),
-            containerWidth: logic.readPageState.imageContainerSizes[index]?.width ?? logic.getPlaceHolderSize(index).width,
-            containerHeight: logic.readPageState.imageContainerSizes[index]?.height ?? logic.getPlaceHolderSize(index).height,
-            clearMemoryCacheWhenDispose: true,
-            loadingWidgetBuilder: () => _loadingWidgetBuilder(context, index),
-            failedWidgetBuilder: (state) => _failedWidgetBuilderForLocalMode(index, state),
-            completedWidgetBuilder: (state) => completedWidgetBuilderForLocalModeCallBack(index, state),
-            animateOnlyWhenVisible: true,
-            maxBytes: readSetting.enableMaxImageKilobyte.isTrue ? readSetting.maxImageKilobyte.toInt() * 1024 : null,
-          ),
+            MangaTranslationOverlay(
+              gid: gid,
+              pageIndex: index,
+              containerWidth: width,
+              containerHeight: height,
+              imageFile: readPageState.images[index]?.path != null ? File(readPageState.images[index]!.path!) : null,
+            ),
+          ],
         );
       },
     );
@@ -319,22 +352,38 @@ abstract class BaseLayout extends StatelessWidget {
   }
 
   Widget _buildLocalImage(BuildContext context, int index) {
-    return GestureDetector(
-      onLongPressStart: (details) => logic.showLocalImageContextMenu(index, context, position: details.globalPosition),
-      onSecondaryTapDown: (details) => logic.showLocalImageContextMenu(index, context, position: details.globalPosition),
-      child: EHImage(
-        galleryImage: readPageState.images[index]!,
-        containerWidth: logic.readPageState.imageContainerSizes[index]?.width ?? logic.getPlaceHolderSize(index).width,
-        containerHeight: logic.readPageState.imageContainerSizes[index]?.height ?? logic.getPlaceHolderSize(index).height,
-        clearMemoryCacheWhenDispose: true,
-        downloadingWidgetBuilder: () => _downloadingWidgetBuilder(index),
-        pausedWidgetBuilder: () => _pausedWidgetBuilder(index),
-        loadingWidgetBuilder: () => _loadingWidgetBuilder(context, index),
-        failedWidgetBuilder: (state) => _failedWidgetBuilderForLocalMode(index, state),
-        completedWidgetBuilder: (state) => completedWidgetBuilderForLocalModeCallBack(index, state),
-        animateOnlyWhenVisible: true,
-        maxBytes: readSetting.enableMaxImageKilobyte.isTrue ? readSetting.maxImageKilobyte.toInt() * 1024 : null,
-      ),
+    double width = logic.readPageState.imageContainerSizes[index]?.width ?? logic.getPlaceHolderSize(index).width;
+    double height = logic.readPageState.imageContainerSizes[index]?.height ?? logic.getPlaceHolderSize(index).height;
+
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        GestureDetector(
+          onLongPressStart: (details) => logic.showLocalImageContextMenu(index, context, position: details.globalPosition),
+          onSecondaryTapDown: (details) => logic.showLocalImageContextMenu(index, context, position: details.globalPosition),
+          child: EHImage(
+            galleryImage: readPageState.images[index]!,
+            containerWidth: width,
+            containerHeight: height,
+            clearMemoryCacheWhenDispose: true,
+            downloadingWidgetBuilder: () => _downloadingWidgetBuilder(index),
+            pausedWidgetBuilder: () => _pausedWidgetBuilder(index),
+            loadingWidgetBuilder: () => _loadingWidgetBuilder(context, index),
+            failedWidgetBuilder: (state) => _failedWidgetBuilderForLocalMode(index, state),
+            completedWidgetBuilder: (state) => completedWidgetBuilderForLocalModeCallBack(index, state),
+            animateOnlyWhenVisible: true,
+            maxBytes: readSetting.enableMaxImageKilobyte.isTrue ? readSetting.maxImageKilobyte.toInt() * 1024 : null,
+          ),
+        ),
+        if (readPageState.readPageInfo.gid != null)
+          MangaTranslationOverlay(
+            gid: readPageState.readPageInfo.gid!,
+            pageIndex: index,
+            containerWidth: width,
+            containerHeight: height,
+            imageFile: readPageState.images[index]?.path != null ? File(readPageState.images[index]!.path!) : null,
+          ),
+      ],
     );
   }
 

@@ -41,6 +41,24 @@ class zh_CN {
       'gallery': "画廊",
       'setting': '设置',
 
+      /// manga translation
+      'mangaTranslation': '漫画翻译',
+      'mangaTranslationDesc': '气泡检测识别与自适应覆盖翻译',
+      'enableMangaTranslation': '开启漫画翻译',
+      'enableMangaTranslationHint': '在阅读器中自动检测气泡并覆盖显示翻译文字',
+      'translationEngine': '翻译引擎',
+      'selectEngine': '选择翻译引擎',
+      'translating': '翻译中...',
+      'translationFailed': '翻译失败，点击重试',
+      'translationEnabled': '已开启漫画翻译',
+      'translationDisabled': '已关闭漫画翻译',
+      'dialogueDetail': '气泡台词详情',
+      'originalText': '原文',
+      'translatedText': '译文',
+      'copyTranslation': '复制译文',
+      'copied': '已复制',
+      'close': '关闭',
+
       /// unlock page
       'localizedReason': '请验证以继续',
       'tap2Auth': '点击以验证',

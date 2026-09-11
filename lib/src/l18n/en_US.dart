@@ -41,6 +41,24 @@ class en_US {
       'gallery': "Gallery",
       'setting': 'Setting',
 
+      /// manga translation
+      'mangaTranslation': 'Manga Translation',
+      'mangaTranslationDesc': 'Speech bubble OCR & adaptive inpainting translation',
+      'enableMangaTranslation': 'Enable Manga Translation',
+      'enableMangaTranslationHint': 'Detect speech bubbles and render translated text on the manga page',
+      'translationEngine': 'Translation Engine',
+      'selectEngine': 'Select Translation Engine',
+      'translating': 'Translating...',
+      'translationFailed': 'Translation failed, tap to retry',
+      'translationEnabled': 'Manga translation enabled',
+      'translationDisabled': 'Manga translation disabled',
+      'dialogueDetail': 'Dialogue Details',
+      'originalText': 'Original Text',
+      'translatedText': 'Translated Text',
+      'copyTranslation': 'Copy Translation',
+      'copied': 'Copied',
+      'close': 'Close',
+
       /// schedule
       'dawnOfaNewDay': 'It is the dawn of a new day!',
       'encounterMonster': 'You have encountered a monster!',

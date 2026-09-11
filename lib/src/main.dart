@@ -27,6 +27,7 @@ import 'package:jhentai/src/service/path_service.dart';
 import 'package:jhentai/src/service/quick_search_service.dart';
 import 'package:jhentai/src/service/read_progress_service.dart';
 import 'package:jhentai/src/service/schedule_service.dart';
+import 'package:jhentai/src/service/manga_translation_service.dart';
 import 'package:jhentai/src/service/search_history_service.dart';
 import 'package:jhentai/src/service/storage_service.dart';
 import 'package:jhentai/src/service/super_resolution_service.dart';
@@ -40,6 +41,7 @@ import 'package:jhentai/src/setting/download_setting.dart';
 import 'package:jhentai/src/setting/eh_setting.dart';
 import 'package:jhentai/src/setting/favorite_setting.dart';
 import 'package:jhentai/src/setting/keyboard_shortcut_setting.dart';
+import 'package:jhentai/src/setting/manga_translation_setting.dart';
 import 'package:jhentai/src/setting/mouse_setting.dart';
 import 'package:jhentai/src/setting/my_tags_setting.dart';
 import 'package:jhentai/src/setting/network_setting.dart';
@@ -78,6 +80,7 @@ List<JHLifeCircleBean> lifeCircleBeans = [
   searchHistoryService,
   storageService,
   superResolutionService,
+  mangaTranslationService,
   tagTranslationService,
   tagSearchOrderOptimizationService,
   volumeService,
@@ -97,6 +100,7 @@ List<JHLifeCircleBean> lifeCircleBeans = [
   siteSetting,
   styleSetting,
   superResolutionSetting,
+  mangaTranslationSetting,
   userSetting,
   keyboardShortcutSetting,
   builtInBlockedUserService,

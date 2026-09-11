@@ -1,4 +1,4 @@
-﻿import 'dart:math';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -23,6 +23,7 @@ import 'package:window_manager/window_manager.dart';
 import '../../config/ui_config.dart';
 import '../../service/gallery_download/gallery_download_service.dart';
 import '../../setting/keyboard_shortcut_setting.dart';
+import '../../setting/manga_translation_setting.dart';
 import '../../setting/read_setting.dart';
 import '../../utils/route_util.dart';
 import '../../utils/screen_size_util.dart';
@@ -309,6 +310,19 @@ class _ReadPageState extends State<ReadPage> with ScrollStatusListener, WindowLi
             title: Text(state.readPageInfo.galleryTitle, style: const TextStyle(color: UIConfig.readPageButtonColor)),
             leading: const BackButton(color: UIConfig.readPageButtonColor),
             actions: [
+              Obx(
+                () => IconButton(
+                  icon: Icon(
+                    Icons.translate,
+                    size: 22,
+                    color: mangaTranslationSetting.enableTranslation.value
+                        ? UIConfig.readPageActiveButtonColor(context)
+                        : UIConfig.readPageButtonColor,
+                  ),
+                  tooltip: 'mangaTranslation'.tr,
+                  onPressed: logic.handleTapTranslationButton,
+                ),
+              ),
               if (GetPlatform.isDesktop &&
                   state.readPageInfo.gid != null &&
                   (state.readPageInfo.mode == ReadMode.downloaded || state.readPageInfo.mode == ReadMode.archive) &&

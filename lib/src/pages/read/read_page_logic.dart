@@ -1,4 +1,4 @@
-﻿import 'dart:async';
+import 'dart:async';
 import 'dart:math';
 
 import 'package:collection/collection.dart';
@@ -37,8 +37,11 @@ import '../../network/eh_request.dart';
 import '../../routes/routes.dart';
 import '../../service/local_config_service.dart';
 import '../../service/log.dart';
+import 'dart:io';
 import '../../service/gallery_download/gallery_images_retainer.dart';
+import '../../service/manga_translation_service.dart';
 import '../../service/read_progress_service.dart';
+import '../../setting/manga_translation_setting.dart';
 import '../../setting/preference_setting.dart';
 import '../../setting/read_setting.dart';
 import '../../utils/eh_spider_parser.dart';
@@ -774,6 +777,26 @@ class ReadPageLogic extends GetxController with WidgetsBindingObserver, GalleryI
   void handleTapSuperResolutionButton() {
     state.useSuperResolution = !state.useSuperResolution;
     log.info('toggle super resolution mode: ${state.useSuperResolution}');
+    updateSafely([topMenuId]);
+    layoutLogic.updateSafely([BaseLayoutLogic.pageId]);
+  }
+
+  void handleTapTranslationButton() {
+    bool next = !mangaTranslationSetting.enableTranslation.value;
+    mangaTranslationSetting.saveEnableTranslation(next);
+    toast(next ? 'translationEnabled'.tr : 'translationDisabled'.tr);
+
+    if (next && state.readPageInfo.gid != null) {
+      int currentIdx = state.readPageInfo.currentImageIndex;
+      File? imgFile = state.images[currentIdx]?.path != null ? File(state.images[currentIdx]!.path!) : null;
+      if (imgFile != null) {
+        mangaTranslationService.translatePage(
+          gid: state.readPageInfo.gid!,
+          pageIndex: currentIdx,
+          imageFile: imgFile,
+        );
+      }
+    }
     updateSafely([topMenuId]);
     layoutLogic.updateSafely([BaseLayoutLogic.pageId]);
   }

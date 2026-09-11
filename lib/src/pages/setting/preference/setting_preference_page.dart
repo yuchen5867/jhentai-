@@ -16,6 +16,7 @@ import '../../../setting/style_setting.dart';
 import '../../../utils/locale_util.dart';
 import '../../../utils/route_util.dart';
 import '../../../widget/loading_state_indicator.dart';
+import 'manga_translation/setting_manga_translation_page.dart';
 
 class SettingPreferencePage extends StatelessWidget {
   const SettingPreferencePage({Key? key}) : super(key: key);
@@ -31,6 +32,7 @@ class SettingPreferencePage extends StatelessWidget {
             children: [
               _buildLanguage(),
               _buildTagTranslate(),
+              _buildMangaTranslation(),
               _buildTagOrderOptimization(),
               _buildDefaultTab(),
               _buildDefaultDownloadTab(),
@@ -496,6 +498,15 @@ class SettingPreferencePage extends StatelessWidget {
       subtitle: Text('confirmDestructiveActionsHint'.tr),
       value: preferenceSetting.confirmDestructiveActions.value,
       onChanged: preferenceSetting.saveConfirmDestructiveActions,
+    );
+  }
+
+  Widget _buildMangaTranslation() {
+    return ListTile(
+      title: Text('mangaTranslation'.tr),
+      subtitle: Text('mangaTranslationDesc'.tr),
+      trailing: const Icon(Icons.keyboard_arrow_right),
+      onTap: () => toRoute(const SettingMangaTranslationPage()),
     );
   }
 }
