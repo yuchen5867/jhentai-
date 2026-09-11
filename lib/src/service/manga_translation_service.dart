@@ -93,7 +93,7 @@ class MangaTranslationService extends GetxController
           return translation;
         }
       } catch (e) {
-        log.warn('Failed reading translation cache for gid=$gid, page=$pageIndex', e);
+        log.warning('Failed reading translation cache for gid=$gid, page=$pageIndex', e);
       }
     }
 
@@ -121,7 +121,7 @@ class MangaTranslationService extends GetxController
             final File cacheFile = await _getCacheFile(gid, pageIndex);
             await cacheFile.writeAsString(translation.toJsonString());
           } catch (e) {
-            log.warn('Failed writing translation cache to disk', e);
+            log.warning('Failed writing translation cache to disk', e);
           }
         } else {
           _pageStates[key] = LoadingState.idle;

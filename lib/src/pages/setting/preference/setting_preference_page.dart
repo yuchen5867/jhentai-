@@ -506,7 +506,7 @@ class SettingPreferencePage extends StatelessWidget {
       title: Text('mangaTranslation'.tr),
       subtitle: Text('mangaTranslationDesc'.tr),
       trailing: const Icon(Icons.keyboard_arrow_right),
-      onTap: () => toRoute(const SettingMangaTranslationPage()),
+      onTap: () => Get.to(() => const SettingMangaTranslationPage()),
     );
   }
 }

@@ -40,7 +40,7 @@ class FreeGoogleEngine implements TranslationEngine {
         final String translated = await _translateSingleText(raw, lang);
         results.add(bubble.copyWith(translatedText: translated.isNotEmpty ? translated : raw));
       } catch (e) {
-        log.warn('Free Google translation failed for bubble: $raw', e);
+        log.warning('Free Google translation failed for bubble: $raw', e);
         results.add(bubble);
       }
     }
