@@ -14,9 +14,13 @@ class MangaOcrEngine {
   static const String modelFileName = 'manga_ocr_int8.onnx';
   static const String detectorFileName = 'dbnet_detector.onnx';
 
-  /// Download URL for the quantized Manga-OCR ONNX model (community mirror)
-  static const String modelDownloadUrl =
-      'https://github.com/jiangtian616/JHenTai/releases/download/v1.0.0/manga_ocr_int8.onnx';
+  /// Download URLs for the quantized Manga-OCR ONNX model with mirrors and fallbacks
+  static const List<String> modelDownloadUrls = [
+    'https://ghfast.top/https://github.com/yuchen5867/jhentai-/releases/download/v1.0.0-models/manga_ocr_int8.onnx',
+    'https://github.com/yuchen5867/jhentai-/releases/download/v1.0.0-models/manga_ocr_int8.onnx',
+    'https://hf-mirror.com/onnx-community/manga-ocr-base-ONNX/resolve/main/onnx/encoder_model_int8.onnx',
+    'https://huggingface.co/onnx-community/manga-ocr-base-ONNX/resolve/main/onnx/encoder_model_int8.onnx',
+  ];
 
   bool _isDownloading = false;
   CancelToken? _cancelToken;
@@ -45,7 +49,7 @@ class MangaOcrEngine {
     return exists;
   }
 
-  /// Download the offline Manga-OCR model on demand
+  /// Download the offline Manga-OCR model on demand with multi-mirror failover
   Future<void> downloadModel({
     required Function(double progress, String info) onProgress,
     required VoidCallback onSuccess,
@@ -60,20 +64,59 @@ class MangaOcrEngine {
       final File targetFile = File(p.join(dir.path, modelFileName));
       final File tempFile = File(p.join(dir.path, '$modelFileName.tmp'));
 
-      final dio = Dio();
-      await dio.download(
-        modelDownloadUrl,
-        tempFile.path,
-        cancelToken: _cancelToken,
-        onReceiveProgress: (received, total) {
-          if (total > 0) {
-            final double progress = received / total;
-            final String info =
-                '${(received / 1024 / 1024).toStringAsFixed(1)}MB / ${(total / 1024 / 1024).toStringAsFixed(1)}MB';
-            onProgress(progress, info);
+      bool downloaded = false;
+      dynamic lastError;
+
+      for (int i = 0; i < modelDownloadUrls.length; i++) {
+        if (_cancelToken?.isCancelled ?? false) break;
+
+        final String url = modelDownloadUrls[i];
+        try {
+          if (await tempFile.exists()) {
+            await tempFile.delete();
           }
-        },
-      );
+
+          onProgress(0.0, '连接镜像节点 (${i + 1}/${modelDownloadUrls.length})...');
+
+          final dio = Dio(BaseOptions(
+            connectTimeout: const Duration(seconds: 15),
+            receiveTimeout: const Duration(minutes: 10),
+            followRedirects: true,
+          ));
+
+          await dio.download(
+            url,
+            tempFile.path,
+            cancelToken: _cancelToken,
+            onReceiveProgress: (received, total) {
+              if (total > 0) {
+                final double progress = received / total;
+                final String info =
+                    '${(received / 1024 / 1024).toStringAsFixed(1)}MB / ${(total / 1024 / 1024).toStringAsFixed(1)}MB (节点 ${i + 1})';
+                onProgress(progress, info);
+              } else if (received > 0) {
+                final String info = '${(received / 1024 / 1024).toStringAsFixed(1)}MB (节点 ${i + 1})';
+                onProgress(0.5, info);
+              }
+            },
+          );
+
+          if (await tempFile.exists() && await tempFile.length() > 50 * 1024 * 1024) {
+            downloaded = true;
+            break;
+          }
+        } catch (e) {
+          lastError = e;
+          log.warning('Manga-OCR download from $url failed: $e, trying next source...');
+        }
+      }
+
+      if (!downloaded) {
+        if (await tempFile.exists()) {
+          await tempFile.delete();
+        }
+        throw lastError ?? Exception('所有下载镜像节点均连接失败');
+      }
 
       if (await tempFile.exists()) {
         if (await targetFile.exists()) {

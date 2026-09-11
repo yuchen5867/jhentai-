@@ -199,7 +199,7 @@ class _SettingMangaTranslationPageState extends State<SettingMangaTranslationPag
       title: const Text('离线 Manga-OCR 模型'),
       subtitle: _isDownloading
           ? Text('正在下载: $_downloadInfo (${(_downloadProgress * 100).toStringAsFixed(1)}%)')
-          : Text(isDownloaded ? '已下载并就绪 (支持离线高精度识别)' : '未下载 (约 45MB，点击一键下载)'),
+          : Text(isDownloaded ? '已下载并就绪 (支持离线高精度识别)' : '未下载 (约 83MB，点击一键下载)'),
       trailing: _isDownloading
           ? const SizedBox(
               width: 24,
